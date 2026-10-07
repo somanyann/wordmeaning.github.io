@@ -1,3 +1,15 @@
+/* GAGANA DAW ON GITHUB so let's see
+async function getWords () {
+    const response = await fetch("souceWords/sourceWords.json");
+    const words = await response.json();
+
+    return words;
+}
+
+const wordyWord = await getWords();
+console.log(wordyWord);
+*/
+
 // list of intermediate words
 let intermediateWords = [
     "ambiguous",
