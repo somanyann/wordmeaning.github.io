@@ -1,6 +1,5 @@
 console.log("JavaScript file loaded!");
 
-// list of intermediate words
 let intermediateWords = [
     "ambiguous",
     "benevolent",
@@ -26,8 +25,7 @@ function getRandomWord() {
     return randomWord;
 }
 
-const randomWord = getRandomWord();
-
+/* -------- SYNONYMS FUNCTIONS HERE ------- */
 
 // SYNONYMS OF RANDOM WORD FUNCTION
 async function getSynonyms(word) {
@@ -38,34 +36,18 @@ async function getSynonyms(word) {
     const data = await response.json();
 
     // returning only the words
-    synonyms = data.map(item => item.word);
+    const synonyms = data.map(item => item.word);
     return synonyms;
 }
 
-
-// ANTONYMS OF RANDOM WORD FUNCTION
-async function getAntonyms(word) {
-    const response = await fetch(
-        `https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}` // use of api
-    );
-
-    const data = await response.json();
-
-    // returning only the words
-    const antonyms = data.map(item => item.word);
-    return antonyms;
-}
-
-
-
-/* VERIFYING OF SYNONYMS COUNT FUNCTION 
-    - this function dictates if a new word will be selected and give the corresponding synonyms of the new word
-    - result of this is the synonyms
-    - point of selection, not yet the function for selecting the correct words
-*/
+// VERIFYING OF SYNONYMS COUNT FUNCTION 
+ //   - this function dictates if a new word will be selected and give the corresponding synonyms of the new word
+ //   - result of this is the synonyms
+ //   - point of selection, not yet the function for selecting the correct words
 function getSynonymsWithCount(word, count) {
+    const synonyms = getSynonyms(word);
+
     // if SYNONYMS LESS THAN NEEDED number
-    const synonyms = getSynonyms(randomWord);
     if (synonyms.length < count) {
         let newRandomWord = getRandomWord();
         console.log("New random word:", newRandomWord);
@@ -83,19 +65,9 @@ function getSynonymsWithCount(word, count) {
 
         return synonyms;
     } else {
-        /*
-        const finalWord = getSynonyms(word).then(finalSynonyms => {
-            console.log("Final synonyms for", word, "are:", finalSynonyms);
-            return finalSynonyms;
-        });
-        */
-
         return synonyms;
     }
 }
-
-const selectingSynonyms = getSynonymsWithCount(randomWord, 2);
-
 
 // SELECTING CERTAIN NUMBER OF CORRECT ANSWERS FUNCTION
 async function getRandomSynonyms(synonyms, count) {
@@ -120,14 +92,28 @@ async function getRandomSynonyms(synonyms, count) {
     return selectedSynonyms;
 }
 
-const correctAnswers = getRandomSynonyms(selectingSynonyms, 2);
+/* --------- END OF SYNONYMS FUNCTIONS HERE ---------- */
 
+
+/* --------- ANTONYMS FUNCTIONS HERE ---------- */
+
+// ANTONYMS OF RANDOM WORD FUNCTION
+async function getAntonyms(word) {
+    const response = await fetch(
+        `https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}` // use of api
+    );
+
+    const data = await response.json();
+
+    // returning only the words
+    const antonyms = data.map(item => item.word);
+    return antonyms;
+}
 
 // ANTONYM FILLER
-function getAntonymFillers(word, count) {
-    word = getAntonyms(randomWord);
+function getAntonymFillers(count) {
     const selectedAntonyms = [];
-    while (word.length < count) {
+    while (selectedAntonyms.length < count) {
         const randomIndex = Math.floor(Math.random() * intermediateWords.length);
         const randomAntonym = intermediateWords[randomIndex];
         if (!selectedAntonyms.includes(randomAntonym)) {
@@ -139,90 +125,61 @@ function getAntonymFillers(word, count) {
 
 // FILLING THE ANTONYMS ARRAY WITH 4 WORDS FUNCTION
 async function getEnoughAntonyms(word, count) {
-    const antonymsSelection = getAntonyms(word);
-    const antonymsArray = await antonymsSelection;
+    const antonymsSelection = await getAntonyms(word);
+    const antonymsArray = [...antonymsSelection];
 
     if (antonymsArray.length < count) {
         const missing = count - antonymsArray.length;
 
-        const fillerAntonym = getAntonymFillers(intermediateWords, missing);
+        const fillerAntonym = getAntonymFillers(missing);
         const finalAntonyms = [...antonymsArray, ...fillerAntonym];
 
-        console.log("Final antonyms:", finalAntonyms);
-
-        return finalAntonyms
+        return finalAntonyms;
     }
     return antonymsArray;
 }
 
-const wrongAnswers = getEnoughAntonyms(randomWord, 4);
+/* --------- END OF ANTONYMS FUNCTIONS HERE ---------- */
 
+
+/* --------- SHUFFLE FUNCTION HERE ---------- */
 
 // COMBINING SELECTED SYNONYMS AND ANTONYMS THEN RUMBLE ARRANGEMENT FUNCTION
 function rumbleSynonymsAntonyms(correct, wrong) {
-    correct = correctAnswers;
-    wrong = wrongAnswers;
-
     // combining synonyms and antonyms together
-    const optionWords = [...correctAnswers, ...wrongAnswers];
+    const optionWords = [...correct, ...wrong];
 
     // shuffling synonyms and antonyms
     const shuffleOptions = [...optionWords].sort(() => Math.random() - 0.5);
 
-
-    /*
-    for (let word = 0; word < shuffleOptions.length; word++) {
-        console.log(shuffleOptions[word]);
-    }
-    */
-
     return shuffleOptions;
 }
 
-
-// GET THE ANSWER (WORDS) FUNCTION
-const selectedWords = [];
-
-const choices = rumbleSynonymsAntonyms(correctAnswers, wrongAnswers);
-choices.forEach(choice => {
-    
-    //creating of button for each choice
-    const button = document.createElement("button");
-    button.textContent = choice;
-
-    // code to check if the answer is correct
-    button.dataset.word = choice;
-    // LIMITING THE USER TO CHOOSE 2 WORDS
-    button.addEventListener("click", function() {
-    if (!selectedWords.includes(choice) && selectedWords.length < 2) {
-        selectedWords.push(choice);
-        button.classList.add("selected");
-    }
-});
-
-    wordOptions.appendChild(button);
-});
-
-
-// VERIIFY IF THE SELECTED WORDS ARE CORRECT FUNCTION --incorrect undefined daw yung words variable
-function checker() {
-    for (let word of selectedWords) {
-        if (correctSynonyms.includes(word)) {
-            console.log("Correct:", word);
-        } else {
-            console.log("Incorrect:", word);
-        }
-    }
-}
+/* --------- END OF SHUFFLE FUNCTION HERE ---------- */
 
 
 
+/*  CALLING FUNCTIONS HERE  */
 
-/*           START OF THE GAME        */
+// displaying the picked word here
+const questionWord = document.querySelector("#question-word");
 
 async function startGame() {
     const randomWord = getRandomWord();
     console.log("Random word:", randomWord);
+    questionWord.textContent = `"${randomWord.toUpperCase()}"`;
+
+    // showing selected synonyms
+    const listOfSynonyms = await getSynonymsWithCount(randomWord, 2);
+    const rightAsnwers = await getRandomSynonyms(listOfSynonyms, 2);
+    console.log(rightAsnwers); //for deletion
+
+    // showing selected antonyms
+    const wrongAnswers = await getEnoughAntonyms(randomWord, 4);
+    console.log(wrongAnswers); // for deletion
+
+    //randomizer
+    console.log(rumbleSynonymsAntonyms(rightAsnwers, wrongAnswers));
 }
 
 const pickWordButton = document.querySelector("#pick-word");
@@ -232,8 +189,3 @@ pickWordButton.addEventListener("click", function() {
 
 // container for html for creating container for choices
 const wordOptions = document.querySelector("#word-options");
-
-const submitButton = document.querySelector("#submit-answer");
-submitButton.addEventListener("click", function() {
-    checker();
-});
