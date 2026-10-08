@@ -1,0 +1,10 @@
+body {
+    background-image: linear-gradient(rgba(0, 10, 50, 0.5), rgba(0, 10, 0, 0.5)), url('/imgs/NU-Building.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+.selected {
+    background-color: green;
+    color: white;
+}

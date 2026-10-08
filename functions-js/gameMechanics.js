@@ -1,14 +1,4 @@
-/* GAGANA DAW ON GITHUB so let's see
-async function getWords () {
-    const response = await fetch("souceWords/sourceWords.json");
-    const words = await response.json();
-
-    return words;
-}
-
-const wordyWord = await getWords();
-console.log(wordyWord);
-*/
+console.log("JavaScript file loaded!");
 
 // list of intermediate words
 let intermediateWords = [
@@ -36,10 +26,6 @@ function getRandomWord() {
     return randomWord;
 }
 
-let randomWord = getRandomWord();
-console.log("Random word:", randomWord);
-
-
 
 // SYNONYMS OF RANDOM WORD FUNCTION
 async function getSynonyms(word) {
@@ -54,14 +40,6 @@ async function getSynonyms(word) {
     return synonyms;
 }
 
-let synonyms = getSynonyms(randomWord);
-/*
-then(synonyms => {
-    console.log("Synonyms for", randomWord, "are:", synonyms);
-});
-*/
-
-
 
 // ANTONYMS OF RANDOM WORD FUNCTION
 async function getAntonyms(word) {
@@ -75,14 +53,6 @@ async function getAntonyms(word) {
     antonyms = data.map(item => item.word);
     return antonyms;
 }
-
-let antonyms = getAntonyms(randomWord);
-/* testing error
-.then(antonyms => {
-    console.log("Antonyms for", randomWord, "are:", antonyms);
-});
-*/
-
 
 
 /* VERIFYING OF SYNONYMS COUNT FUNCTION 
@@ -120,10 +90,6 @@ function getSynonymsWithCount(word, count) {
     }
 }
 
-let finalSynonyms = await getSynonymsWithCount(randomWord, 2);
-// console.log("checking final word result",finalSynonyms);
-
-
 
 // SELECTING CERTAIN NUMBER OF CORRECT ANSWERS FUNCTION
 async function getRandomSynonyms(synonyms, count) {
@@ -148,9 +114,6 @@ async function getRandomSynonyms(synonyms, count) {
     return selectedSynonyms;
 }
 
-let correctSynonyms = await getRandomSynonyms(synonyms, 2);
-console.log(`Two unique synonyms for ${randomWord} are:`, correctSynonyms);
-
 
 // ANTONYM FILLER
 function getAntonymFillers(word, count) {
@@ -164,7 +127,6 @@ function getAntonymFillers(word, count) {
     }
     return selectedAntonyms;
 }
-
 
 // FILLING THE ANTONYMS ARRAY WITH 4 WORDS FUNCTION
 async function getEnoughAntonyms(word, count) {
@@ -183,7 +145,6 @@ async function getEnoughAntonyms(word, count) {
     return antonymsArray;
 }
 
-let finalAntonyms = await getEnoughAntonyms(randomWord, 4);
 
 // COMBINING SELECTED SYNONYMS AND ANTONYMS THEN RUMBLE ARRANGEMENT FUNCTION
 function rumbleSynonymsAntonyms(correctAnswers, wrongAnswers) {
@@ -197,9 +158,72 @@ function rumbleSynonymsAntonyms(correctAnswers, wrongAnswers) {
     const shuffleOptions = [...optionWords].sort(() => Math.random() - 0.5);
 
 
+    /*
     for (let word = 0; word < shuffleOptions.length; word++) {
         console.log(shuffleOptions[word]);
     }
+    */
+
+    return shuffleOptions;
 }
 
-rumbleSynonymsAntonyms(finalSynonyms, finalAntonyms);
+
+// calling all the choices and creating a button for each word
+const choices = rumbleSynonymsAntonyms(finalSynonyms, finalAntonyms);
+
+// GET THE ANSWER (WORDS) FUNCTION
+const selectedWords = [];
+
+choices.forEach(choice => {
+    
+    //creating of button for each choice
+    const button = document.createElement("button");
+    button.textContent = choice;
+
+    // code to check if the answer is correct
+    button.dataset.word = choice;
+    // LIMITING THE USER TO CHOOSE 2 WORDS
+    button.addEventListener("click", function() {
+    if (!selectedWords.includes(choice) && selectedWords.length < 2) {
+        selectedWords.push(choice);
+        button.classList.add("selected");
+    }
+});
+
+    wordOptions.appendChild(button);
+});
+
+
+// VERIIFY IF THE SELECTED WORDS ARE CORRECT FUNCTION --incorrect undefined daw yung words variable
+function checker() {
+    for (let word of selectedWords) {
+        if (correctSynonyms.includes(word)) {
+            console.log("Correct:", word);
+        } else {
+            console.log("Incorrect:", word);
+        }
+    }
+}
+
+
+
+
+/*           START OF THE GAME        */
+
+async function startGame() {
+    const randomWord = getRandomWord();
+    console.log("Random word:", randomWord);
+}
+
+const pickWordButton = document.querySelector("#pick-word");
+pickWordButton.addEventListener("click", function() {
+    startGame();
+});
+
+// container for html for creating container for choices
+const wordOptions = document.querySelector("#word-options");
+
+const submitButton = document.querySelector("#submit-answer");
+submitButton.addEventListener("click", function() {
+    checker();
+});
