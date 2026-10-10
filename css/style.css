@@ -8,3 +8,42 @@ body {
     background-color: green;
     color: white;
 }
+
+
+#word-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+#word-options button {
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+}
+
+#submit-answer {
+    margin-top: 20px;
+}
+
+#submit-answer button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+}
+
+#word-options button.selected {
+    background-color: #198754;
+    color: white;
+    border-color: #198754;
+}

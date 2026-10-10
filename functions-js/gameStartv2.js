@@ -44,22 +44,24 @@ async function getSynonyms(word) {
  //   - this function dictates if a new word will be selected and give the corresponding synonyms of the new word
  //   - result of this is the synonyms
  //   - point of selection, not yet the function for selecting the correct words
-function getSynonymsWithCount(word, count) {
-    const synonyms = getSynonyms(word);
+async function getSynonymsWithCount(word, count) {
+    let synonyms = await getSynonyms(word);
 
     // if SYNONYMS LESS THAN NEEDED number
     if (synonyms.length < count) {
-        let newRandomWord = getRandomWord();
-        console.log("New random word:", newRandomWord);
+        const newRandomWord = getRandomWord();
+
+        synonyms = await getSynonyms(newRandomWord);
+        // console.log("New random word:", newRandomWord);
 
         // run synonyms function again to get the synonyms of the new random word
         getSynonyms(newRandomWord).then(newSynonyms => {
-            console.log("Synonyms for", newRandomWord, "are:", newSynonyms);
+            // console.log("Synonyms for", newRandomWord, "are:", newSynonyms);
             if (newSynonyms.length < count) {
                 getSynonymsWithCount(newRandomWord, count);
             } else {
                 synonyms = newSynonyms;
-                console.log("Final synonyms for newWord:", newRandomWord, "are:", synonyms);
+                // console.log("Final synonyms for newWord:", newRandomWord, "are:", synonyms);
             }
         });
 
@@ -111,11 +113,17 @@ async function getAntonyms(word) {
 }
 
 // ANTONYM FILLER
-function getAntonymFillers(count) {
+function getAntonymFillers(count, excludeWords = []) {
     const selectedAntonyms = [];
-    while (selectedAntonyms.length < count) {
-        const randomIndex = Math.floor(Math.random() * intermediateWords.length);
-        const randomAntonym = intermediateWords[randomIndex];
+
+    const availableWords = intermediateWords.filter(
+        word => !excludeWords.includes(word)
+    );
+
+
+    while (selectedAntonyms.length < count && selectedAntonyms.length < availableWords.length) {
+        const randomIndex = Math.floor(Math.random() * availableWords.length);
+        const randomAntonym = availableWords[randomIndex];
         if (!selectedAntonyms.includes(randomAntonym)) {
             selectedAntonyms.push(randomAntonym)
         }
@@ -126,15 +134,18 @@ function getAntonymFillers(count) {
 // FILLING THE ANTONYMS ARRAY WITH 4 WORDS FUNCTION
 async function getEnoughAntonyms(word, count) {
     const antonymsSelection = await getAntonyms(word);
-    const antonymsArray = [...antonymsSelection];
+
+    // remove duplicates and exclude original word
+    const antonymsArray = [...new Set(antonymsSelection)].filter(antonym => antonym.toLowerCase() !== word.toLowerCase()).slice(0, count);
+
+
 
     if (antonymsArray.length < count) {
         const missing = count - antonymsArray.length;
 
-        const fillerAntonym = getAntonymFillers(missing);
-        const finalAntonyms = [...antonymsArray, ...fillerAntonym];
+        const fillerAntonym = getAntonymFillers(missing, [word, ...antonymsArray]);
+        return [...antonymsArray, ...fillerAntonym];
 
-        return finalAntonyms;
     }
     return antonymsArray;
 }
@@ -158,34 +169,184 @@ function rumbleSynonymsAntonyms(correct, wrong) {
 /* --------- END OF SHUFFLE FUNCTION HERE ---------- */
 
 
+/* --------- CHECKER FUNCTION HERE ---------- */
+function checkAnswer(selectedWords, correctAnswers) {
+    const feedback = document.querySelector("#answer-feedback");
+
+    // clear previous feedback
+    feedback.innerHTML = "";
+
+    // feedback
+    selectedWords.forEach(word => {
+        const result = document.createElement("p");
+        result.classList.add("answer-result");
+        if (correctAnswers.includes(word)){
+            result.textContent = `${word} — Correct! ✓`;
+            result.style.color = "green";
+        } else {
+            result.textContent = `${word} — Incorrect ✗`;
+            result.style.color = "red";
+        }
+
+        feedback.appendChild(result);
+    });
+
+    // to show the player the correct answers
+    const missedAnswers = correctAnswers.filter(
+        word => !selectedWords.includes(word)
+    );
+
+    if (missedAnswers.length > 0) {
+        const missedHeading = document.createElement("p");
+        missedHeading.textContent = "Correct answer you missed:";
+        feedback.appendChild(missedHeading);
+
+        missedAnswers.forEach(word => {
+            const missedWord = document.createElement("p");
+            missedWord.textContent = `${word} — Missed answer`;
+            missedWord.style.color = "blue";
+
+            feedback.appendChild(missedWord);
+        })
+    }
+
+}
+/* --------- END OF CHECKER FUNCTION HERE ---------- */
+
 
 /*  CALLING FUNCTIONS HERE  */
 
 // displaying the picked word here
 const questionWord = document.querySelector("#question-word");
 
+// storage for player answer
+let selectedWords = [];
+
+// for sentence creation
+let currentCorrectAnswers = [];
+
 async function startGame() {
     const randomWord = getRandomWord();
-    console.log("Random word:", randomWord);
+    
+    // hiding start of game button
+    const pickWord = document.querySelector("#pick-word");
+    pickWord.hidden = true;
+
+    // showing question section
+    const questionScreen = document.querySelector("#question-screen");
+    questionScreen.hidden = false;
+
     questionWord.textContent = `"${randomWord.toUpperCase()}"`;
 
     // showing selected synonyms
     const listOfSynonyms = await getSynonymsWithCount(randomWord, 2);
     const rightAsnwers = await getRandomSynonyms(listOfSynonyms, 2);
-    console.log(rightAsnwers); //for deletion
+    currentCorrectAnswers = rightAsnwers;
+
 
     // showing selected antonyms
     const wrongAnswers = await getEnoughAntonyms(randomWord, 4);
-    console.log(wrongAnswers); // for deletion
 
     //randomizer
-    console.log(rumbleSynonymsAntonyms(rightAsnwers, wrongAnswers));
+    const choices = rumbleSynonymsAntonyms(rightAsnwers, wrongAnswers);
+
+    // container for html for creating container for choices
+    const wordOptions = document.querySelector("#word-options");
+    wordOptions.innerHTML = "";
+
+    // showing each choice in a button
+    choices.forEach(choice => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = choice;
+
+        //change button when selected
+        button.addEventListener("click", function(){
+
+            // limiting the selected word into 2
+            if (selectedWords.includes(choice)) {
+                selectedWords = selectedWords.filter(word => word !== choice);
+                button.classList.remove("selected");
+            } else if (selectedWords.length < 2) {
+                selectedWords.push(choice);
+                button.classList.add("selected");
+            }
+        }
+    );
+
+        wordOptions.appendChild(button);
+    });
+
+    //checker
+    const submitButton = document.querySelector("#submit-answer");
+    const continueButton = document.querySelector("#continue-button");
+
+    continueButton.hidden = true;
+    submitButton.disabled = false;
+
+    submitButton.onclick = function() {
+        checkAnswer(selectedWords, rightAsnwers);
+
+        // disable all answers button after submission
+        const answerButtons = wordOptions.querySelectorAll("button");
+
+        answerButtons.forEach(button => {
+            button.hidden = true;
+        });
+
+        // hide instruction
+        const instruction = document.querySelector("#instruction");
+        instruction.hidden = true;
+
+        // disable submit
+        submitButton.hidden = true;
+
+        // enable continue
+        continueButton.hidden = false;
+    };
+
 }
 
+// button for starting the game
 const pickWordButton = document.querySelector("#pick-word");
 pickWordButton.addEventListener("click", function() {
     startGame();
 });
 
-// container for html for creating container for choices
-const wordOptions = document.querySelector("#word-options");
+// button for sentence creation
+const continueButton = document.querySelector("#continue-button");
+
+continueButton.addEventListener("click", function() {
+    document.querySelector("#question-screen").hidden = true;
+    document.querySelector("#sentence-screen").hidden = false;
+
+    const wordOne = currentCorrectAnswers[0];
+    const wordTwo = currentCorrectAnswers[1];
+
+    document.querySelector("#sentence-instruction").textContent = `Create a sentence for ${wordOne} and ${wordTwo} in their respective boxed below.`;
+
+    // Update the first sentence box
+    document.querySelector("#sentence-label-one").textContent =
+        `Sentence 1 — ${wordOne}`;
+
+    document.querySelector("#sentence-one").placeholder =
+        `Write a sentence using ${wordOne}...`;
+
+    // Update the second sentence box
+    document.querySelector("#sentence-label-two").textContent =
+        `Sentence 2 — ${wordTwo}`;
+
+    document.querySelector("#sentence-two").placeholder =
+        `Write a sentence using ${wordTwo}...`;
+
+    // hiding continue button for sentence creation
+    continueButton.hidden = true;
+
+    // hiding feedback
+    document.querySelector("#answer-feedback").hidden = true;
+
+    // showing continue for sentence checking part
+    document.querySelector("#continue-sentence-button").hidden = false;
+
+
+});

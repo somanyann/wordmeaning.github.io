@@ -18,7 +18,7 @@
     <!-- END OF NAVIGATION BAR-->
 
 
-    <div class="container-sm">100% wide until small breakpoint
+    <div class="container-sm">
         <form class="row g-3">
 
             <!--START OF BTN (once clicked, it will be vanished from front-end) -->
@@ -31,11 +31,11 @@
             <!--END OF BTN-->
 
             <!-- START OF QUESTION -->
-            <section>
+            <section id="question-screen" hidden>
                 <!-- START OF SLCTD WORD (will show the random word) -->
                 <h1 class="display-6">Which words are synonyms for</h1>
                 <h1 id="question-word" class="display-5"></h1>
-                <p class="h5">Select only 2 words that are synonyms of the word above.</p>
+                <p class="h5" id="instruction">Instruction: Select only 2 words that are synonyms of the word above.</p>
                 <!-- END OF SLCTD WORD -->
 
                 <!-- START OF WORD OPTIONS CONTAINER (will show the synonyms option) -->
@@ -62,30 +62,48 @@
 
             <!-- START OF CORRECT ANSWER -->
             <section>
-                <div>
-                    <p>display here the result of the answer whether correct, almost, or incorrect</p>
+                <!--container for result of selection-->
+                <div id="answer-feedback">
                 </div>
-                <div>
-                    <p>display here the words and the corresponding check or wrong per choices</p>
-                </div>
-                <div>
-                    <p>and a bit of instruction that they will be asked to make sentence out of those correct answers</p>
-                    <button>continue</button>
-                </div>
+                <button id="continue-button" type="button" hidden>
+                    Continue
+                </button>
             </section>
             <!-- END OF CORRECT ANSWER -->
 
             <!-- START OF MAKING SENTENCE -->
-            <section>
-                <form>
-                    <!-- Note: this should be dynamic if how many correct answer there is, this creation of sentence must equal to that number -->
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Use "correct answer" in a sentence</label>
-                        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="This is a sample sentence.">
-                    </div>
-                </form>
+            <section id="sentence-screen" hidden>
+                <h2>Sentence Challenge</h2>
+                <p id="sentence-instruction"></p>
+
+                <label id="sentence-label-one" for="sentence-one"></label>
+                <textarea
+                    id="sentence-one"
+                    placeholder=""
+                ></textarea>
+
+                <label id="sentence-label-two" for="sentence-two"></label>
+                <textarea
+                    id="sentence-two"
+                    placeholder=""
+                ></textarea>
+                <p>Check my word usage and grammar</p>
+                <button id="continue-sentence-button" type="button" hidden>
+                    Continue
+                </button>
+
             </section>
-            <!-- START OF MAKING SENTENCE -->
+            <!-- END OF MAKING SENTENCE -->
+
+            <!-- START OF CHECKING SENTENCES -->
+            <section>
+                
+
+            </section>
+
+            <!-- END OF CHECKING SENTENCES-->
+
+
         </form>
     </div>
     
