@@ -1,51 +1,34 @@
-let intermediateWords = [
-    "ambiguous",
-    "benevolent",
-    "coherent",
-    "conventional",
-    "diligent",
-    "eloquent",
-    "feasible",
-    "inevitable",
-    "meticulous",
-    "profound",
-    "reluctant",
-    "subtle",
-    "versatile",
-    "vivid",
-    "skeptical"
-]
 
-function getRandomWord() {
-    const randomIndex = Math.floor(Math.random() * intermediateWords.length);
-    let randomWord = intermediateWords[randomIndex];
-    return randomWord;
+async function checkGrammar(sentence) {
+    const formData = new URLSearchParams();
+
+    formData.append("text", sentence);
+    formData.append("language", "en-US");
+
+    const response = await fetch(
+        "https://api.languagetool.org/v2/check",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Grammar check request failed.");
+    }
+
+    const data = await response.json();
+
+    console.log("Grammar issues:", data.matches);
+
+    return data.matches;
 }
 
-const randomWord = getRandomWord();
-
-
-
-/* ------------- STARTS HERE ------------------ */
-
-const correctAnswers = ['predictable', 'ineluctable'];
-const wrongAnswers = ['evitable', 'avoidable', 'skeptical', 'subtle'];
-
-
-// COMBINING SELECTED SYNONYMS AND ANTONYMS THEN RUMBLE ARRANGEMENT FUNCTION
-function rumbleSynonymsAntonyms(correct, wrong) {
-    // combining synonyms and antonyms together
-    const optionWords = [...correct, ...wrong];
-
-    // shuffling synonyms and antonyms
-    const shuffleOptions = [...optionWords].sort(() => Math.random() - 0.5);
-
-    return shuffleOptions;
-}
-
-
-// call
-
-
-console.log(randomWord);
-console.log(rumbleSynonymsAntonyms(correctAnswers, wrongAnswers));
+// Test sentence
+checkGrammar("She go to school yesterday.")
+    .then(matches => {
+        console.log("Number of issues:", matches.length);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });

@@ -346,7 +346,7 @@ continueButton.addEventListener("click", function() {
     document.querySelector("#answer-feedback").hidden = true;
 
     // showing continue for sentence checking part
-    document.querySelector("#continue-sentence-button").hidden = false;
+    document.querySelector("#check-sentences-button").hidden = false;
 
 
 });
