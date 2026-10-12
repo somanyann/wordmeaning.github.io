@@ -225,8 +225,11 @@ let selectedWords = [];
 // for sentence creation
 let currentCorrectAnswers = [];
 
+let currentTargetWord = "";
+
 async function startGame() {
     const randomWord = getRandomWord();
+    currentTargetWord = randomWord;
     
     // hiding start of game button
     const pickWord = document.querySelector("#pick-word");

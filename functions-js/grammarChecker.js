@@ -45,7 +45,41 @@ async function checkGrammar(sentence) {
 }
 
 
+/* ------ CHECK SYNONYM MEANING IN CONTEXT WITH GEMINI ------ */
+
+async function checkMeaningInContext(targetWord, assignedSynonym, sentence) {
+    const response = await fetch(
+        "https://onching-word-usage.maryanngutierrez1998.workers.dev/",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                targetWord: targetWord,
+                assignedSynonym: assignedSynonym,
+                sentence: sentence
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.error || "The vocabulary evaluator is unavailable."
+        );
+    }
+
+    return data.feedback;
+}
+
+
+
 /* --- CALLING FUNCTION --- */
+
+
+/* ------ CHECK STUDENT SENTENCES ------ */
 
 const checkSentencesButton = document.getElementById(
     "check-sentences-button"
@@ -59,15 +93,23 @@ checkSentencesButton.addEventListener("click", async function () {
     const sentenceOne = document.getElementById("sentence-one").value.trim();
     const sentenceTwo = document.getElementById("sentence-two").value.trim();
 
-    const wordUsageResults = [
-    checkWordUsage(sentenceOne, currentCorrectAnswers[0]),
-    checkWordUsage(sentenceTwo, currentCorrectAnswers[1])
-    ];
-
     sentenceFeedback.replaceChildren();
 
+    // Check that the student completed both sentences.
     if (!sentenceOne || !sentenceTwo) {
-        sentenceFeedback.textContent = "Please complete both sentences first.";
+        sentenceFeedback.textContent =
+            "Please complete both sentences first.";
+        return;
+    }
+
+    // Check that the game has the words needed for evaluation.
+    if (
+        !currentTargetWord ||
+        !currentCorrectAnswers[0] ||
+        !currentCorrectAnswers[1]
+    ) {
+        sentenceFeedback.textContent =
+            "The vocabulary question is missing information. Please start a new question.";
         return;
     }
 
@@ -75,71 +117,89 @@ checkSentencesButton.addEventListener("click", async function () {
     checkSentencesButton.textContent = "Checking...";
 
     try {
-        const results = await Promise.all([
+        // Run grammar and vocabulary checks for both sentences.
+        const [
+            grammarOne,
+            grammarTwo,
+            meaningOne,
+            meaningTwo
+        ] = await Promise.all([
             checkGrammar(sentenceOne),
-            checkGrammar(sentenceTwo)
+            checkGrammar(sentenceTwo),
+
+            checkMeaningInContext(
+                currentTargetWord,
+                currentCorrectAnswers[0],
+                sentenceOne
+            ),
+
+            checkMeaningInContext(
+                currentTargetWord,
+                currentCorrectAnswers[1],
+                sentenceTwo
+            )
         ]);
 
-        results.forEach((issues, index) => {
+        const grammarResults = [grammarOne, grammarTwo];
+        const meaningResults = [meaningOne, meaningTwo];
+
+        // Display the feedback for each sentence.
+        grammarResults.forEach((issues, index) => {
             const heading = document.createElement("h5");
             heading.textContent = `Sentence ${index + 1}`;
-
             sentenceFeedback.appendChild(heading);
+
+            const grammarHeading = document.createElement("h6");
+            grammarHeading.textContent = "Grammar Feedback";
+            sentenceFeedback.appendChild(grammarHeading);
 
             if (issues.length === 0) {
                 const message = document.createElement("p");
                 message.textContent = "No grammar issues detected.";
                 sentenceFeedback.appendChild(message);
-                return;
-            }
-
-            issues.forEach(issue => {
-                const message = document.createElement("p");
-                message.className = "text-danger";
-                message.textContent = issue.message;
-
-                sentenceFeedback.appendChild(message);
-
-                if (issue.replacements.length > 0) {
-                    const suggestion = document.createElement("p");
-                    suggestion.className = "text-success";
-                    suggestion.textContent =
-                        "Suggestion: " +
-                        issue.replacements
-                            .slice(0, 3)
-                            .map(item => item.value)
-                            .join(", ");
-
-                    sentenceFeedback.appendChild(suggestion);
-                }
-            });
-
-        const usageHeading = document.createElement("h4");
-        usageHeading.textContent = "Word Usage Feedback";
-        sentenceFeedback.appendChild(usageHeading);
-
-        wordUsageResults.forEach((result, index) => {
-            const message = document.createElement("p");
-
-            if (result.wordIsUsed) {
-                message.className = "text-success";
-                message.textContent =
-                    `Sentence ${index + 1}: Your sentence contains the expected synonym "${result.expectedWord}".`;
             } else {
-                message.className = "text-danger";
-                message.textContent =
-                    `Sentence ${index + 1}: Please use the word "${result.expectedWord}" in your sentence.`;
+                issues.forEach(issue => {
+                    const message = document.createElement("p");
+                    message.className = "text-danger";
+                    message.textContent = issue.message;
+                    sentenceFeedback.appendChild(message);
+
+                    if (issue.replacements.length > 0) {
+                        const suggestion = document.createElement("p");
+                        suggestion.className = "text-success";
+
+                        suggestion.textContent =
+                            "Suggestion: " +
+                            issue.replacements
+                                .slice(0, 3)
+                                .map(item => item.value)
+                                .join(", ");
+
+                        sentenceFeedback.appendChild(suggestion);
+                    }
+                });
             }
 
-            sentenceFeedback.appendChild(message);
-        });
+            // Display Gemini's evaluation separately.
+            const meaningHeading = document.createElement("h6");
+            meaningHeading.textContent = "Vocabulary Usage Feedback";
+            sentenceFeedback.appendChild(meaningHeading);
 
+            const meaningMessage = document.createElement("p");
+
+            // Remove simple Markdown bold markers from Gemini's response.
+            meaningMessage.textContent = meaningResults[index]
+                .replace(/\*\*/g, "");
+
+            sentenceFeedback.appendChild(meaningMessage);
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Sentence evaluation error:", error);
+
         sentenceFeedback.textContent =
-            "Sorry, the grammar checker is unavailable. Please try again.";
+            error.message ||
+            "Sorry, the sentence checker is unavailable. Please try again.";
     } finally {
         checkSentencesButton.disabled = false;
         checkSentencesButton.textContent = "Check My Grammar";
