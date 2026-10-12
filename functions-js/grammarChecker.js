@@ -1,3 +1,24 @@
+
+/* ------ CHECK WHETHER THE CORRECT SYNONYM IS USED ------ */
+
+function checkWordUsage(sentence, expectedWord) {
+    // Convert the sentence into lowercase words.
+    const words = sentence.toLowerCase().match(/\b[\w'-]+\b/g) || [];
+
+    // Convert the expected synonym into lowercase.
+    const targetWord = expectedWord.toLowerCase();
+
+    // Check whether the expected word appears in the sentence.
+    const wordIsUsed = words.includes(targetWord);
+
+    return {
+        expectedWord: expectedWord,
+        wordIsUsed: wordIsUsed
+    };
+}
+
+
+
 /* ------ THIS FUNCTION CHECK PLAYER SENTENCES GRAMMAR --------- */
 
 async function checkGrammar(sentence) {
@@ -37,6 +58,11 @@ const sentenceFeedback = document.getElementById(
 checkSentencesButton.addEventListener("click", async function () {
     const sentenceOne = document.getElementById("sentence-one").value.trim();
     const sentenceTwo = document.getElementById("sentence-two").value.trim();
+
+    const wordUsageResults = [
+    checkWordUsage(sentenceOne, currentCorrectAnswers[0]),
+    checkWordUsage(sentenceTwo, currentCorrectAnswers[1])
+    ];
 
     sentenceFeedback.replaceChildren();
 
@@ -87,6 +113,27 @@ checkSentencesButton.addEventListener("click", async function () {
                     sentenceFeedback.appendChild(suggestion);
                 }
             });
+
+        const usageHeading = document.createElement("h4");
+        usageHeading.textContent = "Word Usage Feedback";
+        sentenceFeedback.appendChild(usageHeading);
+
+        wordUsageResults.forEach((result, index) => {
+            const message = document.createElement("p");
+
+            if (result.wordIsUsed) {
+                message.className = "text-success";
+                message.textContent =
+                    `Sentence ${index + 1}: Your sentence contains the expected synonym "${result.expectedWord}".`;
+            } else {
+                message.className = "text-danger";
+                message.textContent =
+                    `Sentence ${index + 1}: Please use the word "${result.expectedWord}" in your sentence.`;
+            }
+
+            sentenceFeedback.appendChild(message);
+        });
+
         });
 
     } catch (error) {
