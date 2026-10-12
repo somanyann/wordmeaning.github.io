@@ -4,6 +4,12 @@ body {
     background-position: center;
 }
 
+.container-sm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .selected {
     background-color: green;
     color: white;
