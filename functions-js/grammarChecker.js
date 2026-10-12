@@ -201,7 +201,7 @@ checkSentencesButton.addEventListener("click", async function () {
             error.message ||
             "Sorry, the sentence checker is unavailable. Please try again.";
     } finally {
-        checkSentencesButton.disabled = false;
+        checkSentencesButton.hidden = true;
         checkSentencesButton.textContent = "Check My Grammar";
     }
 });
