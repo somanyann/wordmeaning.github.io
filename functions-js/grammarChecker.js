@@ -227,5 +227,6 @@ checkSentencesButton.addEventListener("click", async function () {
     } finally {
         checkSentencesButton.hidden = true;
         checkSentencesButton.textContent = "Check My Grammar";
+        document.querySelector("#check-sentences-instruction").hidden = true;
     }
 });

@@ -141,7 +141,8 @@ body {
 /* ---------- GAME CONTENT ---------- */
 
 #question-screen,
-#sentence-screen {
+#sentence-screen,
+#sentence-feedback {
     width: 100%;
     background: var(--nu-white);
     border: 1px solid var(--nu-border);
