@@ -224,6 +224,9 @@ checkSentencesButton.addEventListener("click", async function () {
         sentenceFeedback.textContent =
             error.message ||
             "Sorry, the sentence checker is unavailable. Please try again.";
+            checkSentencesButton.hidden = false;
+            checkSentencesButton.textContent = "Check My Grammar Again";
+            document.querySelector("#check-sentences-instruction").hidden = false;
     } finally {
         checkSentencesButton.hidden = true;
         checkSentencesButton.textContent = "Check My Grammar";
