@@ -1,61 +1,3 @@
-body {
-    /* background-image: linear-gradient(rgba(0, 10, 50, 0.5), rgba(0, 10, 0, 0.5)), url('../imgs/NU-Building.webp'); */
-    background-size: cover;
-    background-position: center;
-}
-
-.container-sm {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.selected {
-    background-color: green;
-    color: white;
-}
-
-
-#word-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-top: 20px;
-}
-
-#word-options button {
-    padding: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
-}
-
-#submit-answer {
-    margin-top: 20px;
-}
-
-#submit-answer button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
-}
-
-#word-options button.selected {
-    background-color: #198754;
-    color: white;
-    border-color: #198754;
-}
-
-/* */
-
 
 /* ---------- NU-INSPIRED THEME ---------- */
 
@@ -141,8 +83,7 @@ body {
 /* ---------- GAME CONTENT ---------- */
 
 #question-screen,
-#sentence-screen,
-#sentence-feedback {
+#sentence-screen {
     width: 100%;
     background: var(--nu-white);
     border: 1px solid var(--nu-border);
@@ -182,11 +123,11 @@ body {
 
 #word-options button:hover {
     border-color: var(--nu-navy);
-    background: var(--nu-light);
+    background: var(--nu-gold);
 }
 
 #word-options button.selected {
-    background: var(--nu-navy);
+    background: var(--nu-gold);
     color: var(--nu-white);
     border-color: var(--nu-navy);
 }
