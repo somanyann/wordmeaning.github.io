@@ -219,6 +219,10 @@ function checkAnswer(selectedWords, correctAnswers) {
 // displaying the picked word here
 const questionWord = document.querySelector("#question-word");
 
+//hiding check sentences container and button
+const checkSentencesContainer = document.querySelector("#check-sentences-container");
+checkSentencesContainer.hidden = true;
+
 // storage for player answer
 let selectedWords = [];
 
@@ -350,6 +354,7 @@ continueButton.addEventListener("click", function() {
 
     // showing continue for sentence checking part
     document.querySelector("#check-sentences-button").hidden = false;
+    checkSentencesContainer.hidden = false;
 
 
 });

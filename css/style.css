@@ -53,3 +53,275 @@ body {
     color: white;
     border-color: #198754;
 }
+
+/* */
+
+
+/* ---------- NU-INSPIRED THEME ---------- */
+
+:root {
+    --nu-navy: #102A56;
+    --nu-gold: #D9AD45;
+    --nu-light: #F3F6FB;
+    --nu-white: #FFFFFF;
+    --nu-text: #202B3C;
+    --nu-muted: #667085;
+    --nu-border: #DCE3ED;
+}
+
+body {
+    margin: 0;
+    background: var(--nu-light);
+    color: var(--nu-text);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Keep the main content centered without forcing
+   every screen into the same flex layout. */
+
+.container-sm {
+    display: block;
+    width: 100%;
+    max-width: 900px;
+    padding: 24px 20px 48px;
+}
+
+/* ---------- START SCREEN ---------- */
+/* Add class="start-screen" to the section
+   that contains the Pick a Random Word button. */
+
+.start-screen {
+    min-height: calc(100vh - 90px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+}
+
+/* ---------- GAME BUTTONS ---------- */
+
+#pick-word,
+#submit-answer,
+#continue-button,
+#check-sentences-button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-weight: 600;
+    transition: background-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+#pick-word,
+#submit-answer,
+#continue-button,
+#check-sentences-button {
+    background: var(--nu-navy);
+    color: var(--nu-white);
+}
+
+#pick-word:hover,
+#submit-answer:hover,
+#continue-button:hover,
+#check-sentences-button:hover {
+    background: #1B4079;
+    transform: translateY(-1px);
+}
+
+#pick-word:focus-visible,
+#submit-answer:focus-visible,
+#continue-button:focus-visible,
+#check-sentences-button:focus-visible {
+    outline: 3px solid var(--nu-gold);
+    outline-offset: 3px;
+}
+
+/* ---------- GAME CONTENT ---------- */
+
+#question-screen,
+#sentence-screen {
+    width: 100%;
+    background: var(--nu-white);
+    border: 1px solid var(--nu-border);
+    border-radius: 20px;
+    padding: clamp(20px, 4vw, 36px);
+    box-shadow: 0 8px 24px rgba(16, 42, 86, 0.07);
+}
+
+#question-screen h2,
+#sentence-screen h2 {
+    color: var(--nu-navy);
+    font-weight: 750;
+}
+
+/* ---------- ANSWER OPTIONS ---------- */
+
+#word-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+}
+
+#word-options button {
+    width: 100%;
+    min-height: 54px;
+    padding: 12px;
+    border: 1px solid var(--nu-border);
+    border-radius: 12px;
+    background: var(--nu-white);
+    color: var(--nu-text);
+    font-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s ease,
+                background-color 0.2s ease;
+}
+
+#word-options button:hover {
+    border-color: var(--nu-navy);
+    background: var(--nu-light);
+}
+
+#word-options button.selected {
+    background: var(--nu-navy);
+    color: var(--nu-white);
+    border-color: var(--nu-navy);
+}
+
+/* ---------- SENTENCE CHALLENGE ---------- */
+
+.sentence-item {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid var(--nu-border);
+    border-radius: 16px;
+    background: #FAFBFD;
+}
+
+.sentence-item label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--nu-navy);
+    font-weight: 700;
+}
+
+.sentence-item textarea {
+    display: block;
+    width: 100%;
+    min-height: 120px;
+    padding: 14px;
+    border: 1px solid var(--nu-border);
+    border-radius: 10px;
+    background: var(--nu-white);
+    color: var(--nu-text);
+    resize: vertical;
+}
+
+.sentence-item textarea:focus {
+    border-color: var(--nu-navy);
+    outline: 3px solid rgba(16, 42, 86, 0.12);
+}
+
+/* ---------- FEEDBACK ---------- */
+
+#answer-feedback,
+#sentence-feedback {
+    margin-top: 24px;
+}
+
+.feedback-card {
+    margin-top: 16px;
+    padding: 18px;
+    border: 1px solid var(--nu-border);
+    border-radius: 14px;
+    background: var(--nu-white);
+}
+
+.feedback-card h3 {
+    margin-bottom: 12px;
+    color: var(--nu-navy);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.feedback-card p:last-child {
+    margin-bottom: 0;
+}
+
+.feedback-correct {
+    border-left: 4px solid #27845B;
+}
+
+.feedback-missed {
+    border-left: 4px solid var(--nu-gold);
+}
+
+.feedback-incorrect {
+    border-left: 4px solid #C64B4B;
+}
+
+/* ---------- SMALL SCREENS ---------- */
+
+@media (max-width: 576px) {
+    .container-sm {
+        padding: 18px 14px 32px;
+    }
+
+    #word-options {
+        grid-template-columns: 1fr;
+    }
+
+    #question-screen,
+    #sentence-screen {
+        padding: 20px 16px;
+    }
+}
+
+
+#check-sentences-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    text-align: center;
+}
+
+#check-sentences-instruction {
+    max-width: 480px;
+    margin: 0;
+    color: #667085;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+#check-sentences-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    background-color: #102A56;
+    color: #FFFFFF;
+    font-weight: 600;
+    transition: background-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+#check-sentences-button:hover {
+    background-color: #1B4079;
+    transform: translateY(-1px);
+}
+
+#check-sentences-button:focus-visible {
+    outline: 3px solid #D9AD45;
+    outline-offset: 3px;
+}
+
+
+
+#sentence-warning {
+    margin-bottom: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}

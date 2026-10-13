@@ -74,23 +74,48 @@
             <!-- START OF MAKING SENTENCE -->
             <section id="sentence-screen" hidden>
                 <h2>Sentence Challenge</h2>
+
+                
+                <!--warning-->
+                <div id="sentence-warning"
+                    class="alert alert-warning alert-dismissible fade show"
+                    role="alert"
+                    hidden>
+                    <strong>Wait a moment!</strong>
+                    Please complete both sentences before checking your answers.
+
+                    <button type="button"
+                            class="btn-close"
+                            aria-label="Close"
+                            id="close-sentence-warning">
+                    </button>
+                </div>
+                <!--end of warning-->
+
+
                 <p id="sentence-instruction"></p>
+                <div class="sentence-item">
+                    <label id="sentence-label-one" for="sentence-one"></label>
+                    <textarea
+                        id="sentence-one"
+                        placeholder="" rows="4"
+                    ></textarea>
+                </div>
 
-                <label id="sentence-label-one" for="sentence-one"></label>
-                <textarea
-                    id="sentence-one"
-                    placeholder=""
-                ></textarea>
-
-                <label id="sentence-label-two" for="sentence-two"></label>
-                <textarea
-                    id="sentence-two"
-                    placeholder=""
-                ></textarea>
-                <p>Check my word usage and grammar</p>
-                <button id="check-sentences-button" type="button" hidden>
-                    Continue
-                </button>
+                <div class="sentence-item">
+                    <label id="sentence-label-two" for="sentence-two"></label>
+                    <textarea
+                        id="sentence-two"
+                        placeholder="" rows="4"
+                    ></textarea>
+                </div>
+                <div id="check-sentences-container">
+                    <p id="check-sentences-instruction">Ready to check your work?
+                        Review your sentences, then check your word usage and grammar.</p>
+                    <button id="check-sentences-button" type="button" class="button" hidden>
+                        Check My Sentences
+                    </button>
+                </div>
 
             </section>
             <!-- END OF MAKING SENTENCE -->

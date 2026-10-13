@@ -96,11 +96,35 @@ checkSentencesButton.addEventListener("click", async function () {
     sentenceFeedback.replaceChildren();
 
     // Check that the student completed both sentences.
+    /* FIRST OPTION
     if (!sentenceOne || !sentenceTwo) {
+        
         sentenceFeedback.textContent =
             "Please complete both sentences first.";
         return;
+        
     }
+    */
+
+    // SECOND OPTION
+    const sentenceWarning = document.querySelector("#sentence-warning");
+    const closeWarningButton = document.querySelector("#close-sentence-warning");
+
+    closeWarningButton.addEventListener("click", () => {
+        sentenceWarning.hidden = true;
+    });
+
+    if (!sentenceOne.trim() || !sentenceTwo.trim()) {
+        sentenceWarning.hidden = false;
+        sentenceWarning.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+        return;
+    }
+
+    sentenceWarning.hidden = true;
+
 
     // Check that the game has the words needed for evaluation.
     if (
